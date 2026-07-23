@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' 'unsafe-inline';"
+    />
+    <title>Scoreko</title>
+    <style>
+      body {
+        background-color: #121212;
+        color: #f5f5f5;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        margin: 0;
+        overflow: hidden;
+        user-select: none;
+      }
+      .loading-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      .loading-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .spinner-container {
+        position: relative;
+        width: 96px;
+        height: 96px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .spinner-logo {
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .q-spinner {
+        position: absolute;
+        animation: q-spin 2s linear infinite;
+        transform-origin: center center;
+        width: 100%;
+        height: 100%;
+        color: #ff7f00;
+      }
+      .q-spinner circle {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+        animation: q-spin-dash 1.5s ease-in-out infinite;
+        stroke-linecap: round;
+      }
+      @keyframes q-spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes q-spin-dash {
+        0% {
+          stroke-dasharray: 1, 200;
+          stroke-dashoffset: 0;
+        }
+        50% {
+          stroke-dasharray: 89, 200;
+          stroke-dashoffset: -35px;
+        }
+        100% {
+          stroke-dasharray: 89, 200;
+          stroke-dashoffset: -124px;
+        }
+      }
+      .quote {
+        max-width: 520px;
+        margin-top: 16px;
+        font-size: 1rem;
+        line-height: 1.75rem;
+        font-weight: 400;
+      }
+      .status {
+        font-style: italic;
+        opacity: 0.7;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-top: 12px;
+      }
+      .q-spinner.determinate {
+        animation: none;
+        transform: rotate(-90deg);
+      }
+      .q-spinner.determinate circle {
+        animation: none;
+        stroke-dasharray: 125.66;
+        stroke-dashoffset: 125.66;
+        transition: stroke-dashoffset 0.3s ease;
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading-page">
+      <div class="loading-content">
+        <div class="spinner-container">
+          <img src="icons/icon.png" class="spinner-logo" alt="Scoreko Logo" />
+          <svg class="q-spinner" id="spinner" viewBox="25 25 50 50">
+            <circle
+              cx="50"
+              cy="50"
+              r="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="4"
+              stroke-miterlimit="10"
+            ></circle>
+          </svg>
+        </div>
+        <div class="quote" id="quoteText"></div>
+
+        <div class="status" id="statusText">Loading...</div>
+      </div>
+    </div>
+
+    <script>
+      const isFirstBoot =
+        new URLSearchParams(window.location.search).get("firstBoot") === "true";
+
+      if (isFirstBoot) {
+        document.getElementById("spinner").classList.add("determinate");
+        document.getElementById("statusText").textContent =
+          "Setting up Scoreko...";
+        document.getElementById("quoteText").textContent =
+          "Preparing environment...";
+
+        window.updateProgress = (percent, text) => {
+          const offset = 125.66 - (125.66 * percent) / 100;
+          document.querySelector(
+            ".q-spinner.determinate circle",
+          ).style.strokeDashoffset = offset;
+
+          if (text) {
+            document.getElementById("quoteText").textContent = text;
+          }
+        };
+      } else {
+        const loadQuotes = [
+          "Complaining about Paul's damage",
+          "Nerfing Gigas",
+          "Mashing hopkick",
+          "Sidestepping your electric",
+          "Punishing hellsweep with 1,1,2",
+          "Emailing Harada",
+        ];
+        const randomIndex = Math.floor(Math.random() * loadQuotes.length);
+        document.getElementById("quoteText").textContent =
+          loadQuotes[randomIndex];
+      }
+    </script>
+  </body>
+</html>

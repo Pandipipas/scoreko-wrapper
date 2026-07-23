@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' 'unsafe-inline';"
+    />
+    <title>Scoreko Update</title>
+    <style>
+      body {
+        background-color: #121212;
+        color: #f5f5f5;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        margin: 0;
+        overflow: hidden;
+        user-select: none;
+      }
+      .page-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .logo-container {
+        margin-bottom: 24px;
+      }
+      .logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .description {
+        font-size: 0.875rem;
+        color: #a0a0a0;
+        margin-bottom: 24px;
+        line-height: 1.4;
+        max-width: 300px;
+      }
+
+      .state-view {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+      }
+      .state-view.active {
+        display: flex;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+        justify-content: center;
+      }
+      button {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        outline: none;
+        transition:
+          background-color 0.2s,
+          opacity 0.2s;
+      }
+      button:active {
+        opacity: 0.8;
+      }
+      .btn-primary {
+        background-color: #ff7f00;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background-color: #e67300;
+      }
+      .btn-secondary {
+        background-color: #2a2a2a;
+        color: #e0e0e0;
+      }
+      .btn-secondary:hover {
+        background-color: #333333;
+      }
+
+      .progress-container {
+        width: 100%;
+        max-width: 300px;
+        background-color: #2a2a2a;
+        border-radius: 8px;
+        height: 8px;
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+      .progress-bar {
+        height: 100%;
+        background-color: #ff7f00;
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+      .progress-text {
+        font-size: 0.875rem;
+        color: #a0a0a0;
+        font-style: italic;
+      }
+
+      .error-text {
+        color: #ff5252;
+        font-size: 0.875rem;
+        margin-bottom: 24px;
+        max-width: 300px;
+        word-wrap: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-container">
+      <div class="logo-container">
+        <img src="icons/icon.png" class="logo" alt="Scoreko Logo" />
+      </div>
+
+      <div id="view-available" class="state-view">
+        <div class="title" id="available-title">Actualización disponible</div>
+        <div class="description" id="available-desc">
+          Una nueva versión de Scoreko está disponible.
+        </div>
+        <div class="button-group">
+          <button class="btn-secondary" id="btn-dismiss">Ahora no</button>
+          <button class="btn-primary" id="btn-download">Descargar</button>
+        </div>
+      </div>
+
+      <div id="view-downloading" class="state-view">
+        <div class="title">Descargando actualización</div>
+        <div class="description">Por favor, espera mientras se descarga.</div>
+        <div class="progress-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="progress-text" id="progress-text">0%</div>
+      </div>
+
+      <div id="view-ready" class="state-view">
+        <div class="title" id="ready-title">Actualización lista</div>
+        <div class="description" id="ready-desc">
+          Scoreko se cerrará para instalar la actualización.
+        </div>
+        <div class="button-group">
+          <button class="btn-secondary" id="btn-later">Luego</button>
+          <button class="btn-primary" id="btn-install">
+            Instalar y cerrar
+          </button>
+        </div>
+      </div>
+
+      <div id="view-error" class="state-view">
+        <div class="title">Error de descarga</div>
+        <div class="error-text" id="error-text">
+          No se pudo descargar la actualización.
+        </div>
+        <button class="btn-primary" id="btn-close-error">Aceptar</button>
+      </div>
+    </div>
+
+    <script>
+      function setView(viewId) {
+        document
+          .querySelectorAll(".state-view")
+          .forEach((el) => el.classList.remove("active"));
+        document.getElementById("view-" + viewId).classList.add("active");
+      }
+
+      document.getElementById("btn-download").addEventListener("click", () => {
+        window.electronAPI.replyChoice("download");
+      });
+      document.getElementById("btn-dismiss").addEventListener("click", () => {
+        window.electronAPI.replyChoice("dismiss");
+      });
+      document.getElementById("btn-install").addEventListener("click", () => {
+        window.electronAPI.replyChoice("install");
+      });
+      document.getElementById("btn-later").addEventListener("click", () => {
+        window.electronAPI.replyChoice("later");
+      });
+      document
+        .getElementById("btn-close-error")
+        .addEventListener("click", () => {
+          window.electronAPI.replyChoice("close-error");
+        });
+
+      if (window.electronAPI) {
+        window.electronAPI.onUpdateState((state, payload) => {
+          if (state === "available") {
+            document.getElementById("available-title").textContent =
+              payload.title || "Actualización disponible";
+            document.getElementById("available-desc").textContent =
+              payload.message || "Scoreko tiene una actualización.";
+            setView("available");
+          } else if (state === "downloading") {
+            setView("downloading");
+          } else if (state === "ready") {
+            document.getElementById("ready-title").textContent =
+              payload.title || "Actualización lista";
+            document.getElementById("ready-desc").textContent =
+              payload.message || "La actualización se ha descargado.";
+            setView("ready");
+          } else if (state === "error") {
+            document.getElementById("error-text").textContent =
+              payload.message || "Ha ocurrido un error.";
+            setView("error");
+          }
+        });
+
+        window.electronAPI.onUpdateProgress((percent) => {
+          const rounded = Math.round(percent);
+          document.getElementById("progress-bar").style.width = rounded + "%";
+          document.getElementById("progress-text").textContent = rounded + "%";
+        });
+      }
+    </script>
+  </body>
+</html>

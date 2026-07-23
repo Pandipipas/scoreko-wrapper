@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' 'unsafe-inline'"
+    />
+    <title>Scoreko - Error al iniciar</title>
+    <style>
+      body {
+        background-color: #121212;
+        color: #f5f5f5;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        margin: 0;
+        overflow: hidden;
+        user-select: none;
+      }
+
+      .error-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+
+      .error-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        max-width: 560px;
+        width: 100%;
+      }
+
+      .error-icon {
+        width: 56px;
+        height: 56px;
+        color: #ef5350;
+        flex-shrink: 0;
+      }
+
+      h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+        color: #f5f5f5;
+      }
+
+      .error-message {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: rgba(245, 245, 245, 0.65);
+        margin: 0;
+        word-break: break-word;
+        max-height: 220px;
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 12px 16px;
+        text-align: left;
+        font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+        white-space: pre-wrap;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .hint {
+        font-size: 0.8125rem;
+        color: rgba(245, 245, 245, 0.45);
+        margin: 0;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      button {
+        appearance: none;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: opacity 0.15s ease;
+      }
+
+      button:hover {
+        opacity: 0.85;
+      }
+
+      button:active {
+        opacity: 0.7;
+      }
+
+      #btn-logs {
+        background: rgba(255, 255, 255, 0.08);
+        color: #f5f5f5;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      #btn-quit {
+        background: #1976d2;
+        color: #fff;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-page">
+      <div class="error-content">
+        <svg
+          class="error-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+
+        <h1 id="error-title">Scoreko no pudo iniciar</h1>
+
+        <pre class="error-message" id="error-detail">
+Se produjo un error inesperado al iniciar el servidor interno.</pre>
+
+        <p class="hint">
+          Revisa los logs para más detalles o cierra y vuelve a abrir la
+          aplicación.
+        </p>
+
+        <div class="actions">
+          <button id="btn-logs">Ver logs</button>
+          <button id="btn-quit">Cerrar Scoreko</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      try {
+        const hash = decodeURIComponent(window.location.hash.slice(1));
+        const params = new URLSearchParams(hash);
+        const msg = params.get("msg");
+        if (msg) {
+          document.getElementById("error-detail").textContent = msg;
+        }
+      } catch (_) {}
+
+      document.getElementById("btn-quit").addEventListener("click", () => {
+        window.close();
+      });
+
+      document.getElementById("btn-logs").addEventListener("click", () => {
+        window.location.href = "app://open-logs";
+      });
+    </script>
+  </body>
+</html>

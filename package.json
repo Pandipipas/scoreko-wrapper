@@ -1,0 +1,147 @@
+{
+  "name": "scoreko-wrapper",
+  "version": "1.0.0-alpha.1",
+  "description": "Scoreko",
+  "author": "Pandipipas",
+  "license": "GPL-3.0",
+  "private": true,
+  "main": "dist/main/main.js",
+  "scripts": {
+    "clean": "rimraf dist release lib",
+    "typecheck": "tsc --noEmit",
+    "build:bundle": "node scripts/build-scoreko-bundle.mjs",
+    "build:main": "tsc -p tsconfig.json",
+    "prepare:runtime": "node scripts/prepare-nodecg-runtime.mjs",
+    "build": "npm run clean && npm run build:bundle && npm run build:main && npm run prepare:runtime",
+    "start": "npm run build && npm run rebuild:native && electron .",
+    "dev": "concurrently -k \"npm run watch\" \"npm run dev:electron\"",
+    "watch": "tsc -p tsconfig.json --watch",
+    "dev:electron": "wait-on dist/main/main.js && electron .",
+    "pack": "npm run build && electron-builder --dir",
+    "rebuild:native": "node scripts/rebuild-nodecg-native.mjs",
+    "test": "rimraf dist && npm run build:main && node --test dist/tests/**/*.test.js",
+    "doctor": "node scripts/doctor.mjs",
+    "lint": "eslint . --ext .ts,.js,.mjs",
+    "lint:fix": "npm run lint --fix",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "dist:win": "npm run build --platform=win32 --arch=x64 && npm run rebuild:native --platform=win32 --arch=x64 && electron-builder --win --x64",
+    "dist:linux": "npm run build --platform=linux --arch=x64 && npm run rebuild:native --platform=linux --arch=x64 && electron-builder --linux AppImage --x64",
+    "dist:all": "npm run build && npm run rebuild:native && electron-builder --win --linux --mac",
+    "dist:mac": "npm run build --platform=darwin --arch=x64 && npm run rebuild:native --platform=darwin --arch=x64 && electron-builder --mac --x64"
+  },
+  "build": {
+    "electronLanguages": [
+      "en-US",
+      "en-GB",
+      "es",
+      "es-419",
+      "ja",
+      "pt-BR",
+      "pt-PT",
+      "fr",
+      "de",
+      "it"
+    ],
+    "asar": true,
+    "appId": "com.scoreko.desktop",
+    "productName": "Scoreko",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "release",
+      "buildResources": "static"
+    },
+    "files": [
+      "dist/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "lib/nodecg",
+        "to": "lib/nodecg",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "lib/nodecg/node_modules",
+        "to": "lib/nodecg/node_modules",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "static",
+        "to": "static"
+      },
+      {
+        "from": ".env",
+        "to": ".env"
+      }
+    ],
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "static/icons/icon.icns"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "icon": "static/icons",
+      "category": "Utility"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "static/icons/icon.ico",
+      "signAndEditExecutable": true
+    },
+    "nsis": {
+      "oneClick": true,
+      "artifactName": "${productName}-setup-${version}.${ext}",
+      "installerIcon": "static/icons/icon.ico",
+      "uninstallerIcon": "static/icons/icon.ico",
+      "installerHeaderIcon": "static/icons/icon.ico",
+      "shortcutName": "Scoreko",
+      "useZip": false,
+      "deleteAppDataOnUninstall": true,
+      "createDesktopShortcut": "always"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Pandipipas",
+        "repo": "scoreko"
+      }
+    ]
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.1.0",
+    "@types/marked": "^5.0.2",
+    "@types/node": "^24.13.2",
+    "@typescript-eslint/eslint-plugin": "^8.22.0",
+    "@typescript-eslint/parser": "^8.22.0",
+    "concurrently": "^10.0.3",
+    "electron": "^39.5.1",
+    "electron-builder": "^26.15.3",
+    "eslint": "^9.19.0",
+    "prettier": "^3.4.2",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3",
+    "wait-on": "^9.0.10"
+  },
+  "dependencies": {
+    "electron-log": "^5.4.4",
+    "electron-updater": "^6.8.9",
+    "marked": "^18.0.5"
+  },
+  "overrides": {
+    "yauzl": "^3.4.0"
+  }
+}

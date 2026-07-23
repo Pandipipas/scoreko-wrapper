@@ -1,0 +1,11 @@
+node_modules
+dist
+release
+/lib
+.corepack
+.electron-cache
+.localappdata
+.npm-cache
+.npm-runtime-cache
+.env
+.github/*
