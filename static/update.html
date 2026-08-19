@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' 'unsafe-inline';"
+    />
+    <title>Scoreko Update</title>
+    <style>
+      :root {
+        --primary: #E66B3C;
+        --primary-hover: #cc5a2e;
+        --text-base: rgba(255, 255, 255, 0.92);
+        --text-muted: rgba(255, 255, 255, 0.7);
+        --border-subtle: rgba(255, 255, 255, 0.08);
+        --bg-subtle: rgba(255, 255, 255, 0.05);
+        --glass-bg: rgba(18, 18, 24, 0.75);
+        --negative: #FF5252;
+      }
+      body {
+        background-color: #121212;
+        background-image: radial-gradient(ellipse at 50% 40%, rgba(230, 107, 60, 0.06) 0%, transparent 70%);
+        color: var(--text-base);
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        margin: 0;
+        overflow: hidden;
+        user-select: none;
+      }
+      .page-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .logo-container {
+        margin-bottom: 24px;
+      }
+      .logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-base);
+      }
+      .description {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+        line-height: 1.4;
+        max-width: 300px;
+      }
+
+      .state-view {
+        display: none;
+        width: 100%;
+        max-width: 380px;
+        flex-direction: column;
+        align-items: center;
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-subtle);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        padding: 28px 24px;
+      }
+      .state-view.active {
+        display: flex;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+        justify-content: center;
+      }
+      button {
+        padding: 8px 20px;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        outline: none;
+        transition: all 0.2s ease;
+      }
+      button:active {
+        transform: scale(0.95);
+      }
+      .btn-primary {
+        background-color: var(--primary);
+        color: #fff;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(230, 107, 60, 0.2);
+      }
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(230, 107, 60, 0.35);
+      }
+      .btn-primary:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 8px rgba(230, 107, 60, 0.15);
+      }
+      .btn-secondary {
+        background: var(--bg-subtle);
+        color: var(--text-base);
+        border: 1px solid var(--border-subtle);
+      }
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .progress-container {
+        width: 100%;
+        max-width: 300px;
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        height: 8px;
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), #F4A261);
+        width: 0%;
+        transition: width 0.3s ease;
+        border-radius: 8px;
+      }
+      .progress-text {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        font-style: italic;
+      }
+
+      .error-text {
+        color: var(--negative);
+        font-size: 0.875rem;
+        margin-bottom: 24px;
+        max-width: 300px;
+        word-wrap: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-container">
+      <div class="logo-container">
+        <img src="icons/icon.png" class="logo" alt="Scoreko Logo" />
+      </div>
+
+      <div id="view-available" class="state-view">
+        <div class="title" id="available-title">Update Available</div>
+        <div class="description" id="available-desc">
+          A new version of Scoreko is available.
+        </div>
+        <div class="button-group">
+          <button class="btn-secondary" id="btn-dismiss">Not now</button>
+          <button class="btn-primary" id="btn-download">Download</button>
+        </div>
+      </div>
+
+      <div id="view-downloading" class="state-view">
+        <div class="title">Downloading Update</div>
+        <div class="description">Please wait while the update is downloading.</div>
+        <div class="progress-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="progress-text" id="progress-text">0%</div>
+      </div>
+
+      <div id="view-ready" class="state-view">
+        <div class="title" id="ready-title">Update Ready</div>
+        <div class="description" id="ready-desc">
+          Scoreko will close to install the update.
+        </div>
+        <div class="button-group">
+          <button class="btn-secondary" id="btn-later">Later</button>
+          <button class="btn-primary" id="btn-install">
+            Install and restart
+          </button>
+        </div>
+      </div>
+
+      <div id="view-error" class="state-view">
+        <div class="title">Download Error</div>
+        <div class="error-text" id="error-text">
+          Could not download the update.
+        </div>
+        <button class="btn-primary" id="btn-close-error">OK</button>
+      </div>
+    </div>
+
+    <script>
+      function setView(viewId) {
+        document
+          .querySelectorAll(".state-view")
+          .forEach((el) => el.classList.remove("active"));
+        document.getElementById("view-" + viewId).classList.add("active");
+      }
+
+      document.getElementById("btn-download").addEventListener("click", () => {
+        window.electronAPI.replyChoice("download");
+      });
+      document.getElementById("btn-dismiss").addEventListener("click", () => {
+        window.electronAPI.replyChoice("dismiss");
+      });
+      document.getElementById("btn-install").addEventListener("click", () => {
+        window.electronAPI.replyChoice("install");
+      });
+      document.getElementById("btn-later").addEventListener("click", () => {
+        window.electronAPI.replyChoice("later");
+      });
+      document
+        .getElementById("btn-close-error")
+        .addEventListener("click", () => {
+          window.electronAPI.replyChoice("close-error");
+        });
+
+      if (window.electronAPI) {
+        window.electronAPI.onUpdateState((state, payload) => {
+          if (state === "available") {
+            document.getElementById("available-title").textContent =
+              payload.title || "Update Available";
+            document.getElementById("available-desc").textContent =
+              payload.message || "A new version of Scoreko is available.";
+            setView("available");
+          } else if (state === "downloading") {
+            setView("downloading");
+          } else if (state === "ready") {
+            document.getElementById("ready-title").textContent =
+              payload.title || "Update Ready";
+            document.getElementById("ready-desc").textContent =
+              payload.message || "The update has been downloaded.";
+            setView("ready");
+          } else if (state === "error") {
+            document.getElementById("error-text").textContent =
+              payload.message || "An error occurred.";
+            setView("error");
+          }
+        });
+
+        window.electronAPI.onUpdateProgress((percent) => {
+          const rounded = Math.round(percent);
+          document.getElementById("progress-bar").style.width = rounded + "%";
+          document.getElementById("progress-text").textContent = rounded + "%";
+        });
+      }
+    </script>
+  </body>
+</html>
