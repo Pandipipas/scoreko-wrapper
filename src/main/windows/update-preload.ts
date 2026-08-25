@@ -4,6 +4,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   replyChoice: (choice: string) => {
     ipcRenderer.send("update-choice", choice);
   },
+  requestState: () => {
+    ipcRenderer.send("update-request-state");
+  },
   onUpdateState: (callback: (state: string, payload: any) => void) => {
     ipcRenderer.on(
       "update-state",
