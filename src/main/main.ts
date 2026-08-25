@@ -174,6 +174,7 @@ async function startApp() {
   const { scheduleUpdateCheck } = await import("./updates/update-service");
   scheduleUpdateCheck({
     appConfig,
+    rootPath: paths.rootPath,
     getParentWindow: () => mainWindow,
     beforeInstall: async () => {
       await nodecgManager?.stop();

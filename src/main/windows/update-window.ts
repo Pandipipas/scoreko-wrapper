@@ -2,6 +2,8 @@ import { BrowserWindow } from "electron";
 import path from "node:path";
 import electronLog from "electron-log";
 
+import { DEFAULT_WINDOW_BACKGROUND } from "../constants";
+
 let updateWindow: BrowserWindow | null = null;
 
 export function getOrCreateUpdateWindow(rootPath: string): BrowserWindow {
@@ -10,12 +12,13 @@ export function getOrCreateUpdateWindow(rootPath: string): BrowserWindow {
   }
 
   updateWindow = new BrowserWindow({
-    width: 450,
-    height: 300,
+    width: 460,
+    height: 340,
     show: false,
     autoHideMenuBar: true,
     title: "Scoreko - Actualización",
     icon: path.join(rootPath, "static/icons/icon.png"),
+    backgroundColor: DEFAULT_WINDOW_BACKGROUND,
     resizable: false,
     maximizable: false,
     fullscreenable: false,

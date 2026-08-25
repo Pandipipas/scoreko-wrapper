@@ -16,12 +16,14 @@ import { getUpdateWindow } from "../windows/update-window";
 
 type UpdateServiceConfig = {
   appConfig: AppRuntimeConfig;
+  rootPath: string;
   getParentWindow: () => BrowserWindow | null;
   beforeInstall: () => Promise<void>;
 };
 
 export function scheduleUpdateCheck({
   appConfig,
+  rootPath,
   getParentWindow,
   beforeInstall,
 }: UpdateServiceConfig): void {
@@ -33,14 +35,16 @@ export function scheduleUpdateCheck({
   }
 
   setTimeout(() => {
-    void checkForUpdates({ getParentWindow, beforeInstall });
+    void checkForUpdates({ rootPath, getParentWindow, beforeInstall });
   }, appConfig.updateCheckDelayMs);
 }
 
 async function checkForUpdates({
+  rootPath,
   getParentWindow,
   beforeInstall,
 }: {
+  rootPath: string;
   getParentWindow: () => BrowserWindow | null;
   beforeInstall: () => Promise<void>;
 }): Promise<void> {
@@ -57,6 +61,7 @@ async function checkForUpdates({
       electronLog.info(`Scoreko update available: ${updateInfo.version}`);
 
       const downloadChoice = await askToDownloadUpdate(
+        rootPath,
         updateInfo,
         getParentWindow(),
       );
@@ -65,7 +70,12 @@ async function checkForUpdates({
 
       autoUpdater.downloadUpdate().catch(async (err) => {
         electronLog.error("Update installer download failed.", err);
-        await showDownloadFailedDialog(updateInfo, err, getParentWindow());
+        await showDownloadFailedDialog(
+          rootPath,
+          updateInfo,
+          err,
+          getParentWindow(),
+        );
       });
     });
 
@@ -81,7 +91,7 @@ async function checkForUpdates({
 
       if (updateInfo.releaseNotes) {
         const notes = Array.isArray(updateInfo.releaseNotes)
-          ? updateInfo.releaseNotes.map((n) => n.note).join("\\n")
+          ? updateInfo.releaseNotes.map((n) => n.note).join("\n")
           : updateInfo.releaseNotes;
 
         const changelogPath = path.join(
@@ -102,6 +112,7 @@ async function checkForUpdates({
       }
 
       const shouldInstall = await askToInstallUpdate(
+        rootPath,
         updateInfo,
         getParentWindow(),
       );
