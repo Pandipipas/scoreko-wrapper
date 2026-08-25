@@ -8,7 +8,9 @@ if (fs.existsSync(envPath)) {
   process.loadEnvFile(envPath);
 }
 
-const defaultBundleRoot = fs.existsSync(path.resolve(electronRoot, "..", "package.json"))
+const defaultBundleRoot = fs.existsSync(
+  path.resolve(electronRoot, "..", "package.json"),
+)
   ? path.resolve(electronRoot, "..")
   : path.resolve(electronRoot, "..", "scoreko");
 
