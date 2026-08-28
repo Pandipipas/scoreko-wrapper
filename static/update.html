@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self' 'unsafe-inline';"
     />
-    <title>Scoreko - Actualización</title>
+    <title>Scoreko - Update</title>
     <style>
       :root {
         --primary: #e66b3c;
@@ -169,20 +169,20 @@
       </div>
 
       <div id="view-available" class="state-view">
-        <div class="title" id="available-title">Actualización disponible</div>
+        <div class="title" id="available-title">Update Available</div>
         <div class="description" id="available-desc">
-          Hay una nueva versión de Scoreko disponible.
+          A new version of Scoreko is available.
         </div>
         <div class="button-group">
-          <button class="btn-secondary" id="btn-dismiss">Ahora no</button>
-          <button class="btn-primary" id="btn-download">Descargar</button>
+          <button class="btn-secondary" id="btn-dismiss">Not now</button>
+          <button class="btn-primary" id="btn-download">Download</button>
         </div>
       </div>
 
       <div id="view-downloading" class="state-view">
-        <div class="title">Descargando actualización</div>
+        <div class="title">Downloading Update</div>
         <div class="description">
-          Por favor espera mientras se descarga la actualización.
+          Please wait while the update is downloading.
         </div>
         <div class="progress-container">
           <div class="progress-bar" id="progress-bar"></div>
@@ -191,24 +191,24 @@
       </div>
 
       <div id="view-ready" class="state-view">
-        <div class="title" id="ready-title">Actualización lista</div>
+        <div class="title" id="ready-title">Update Ready</div>
         <div class="description" id="ready-desc">
-          Scoreko se cerrará para instalar la actualización.
+          Scoreko will restart to install the update.
         </div>
         <div class="button-group">
-          <button class="btn-secondary" id="btn-later">Más tarde</button>
+          <button class="btn-secondary" id="btn-later">Later</button>
           <button class="btn-primary" id="btn-install">
-            Instalar y reiniciar
+            Install and restart
           </button>
         </div>
       </div>
 
       <div id="view-error" class="state-view">
-        <div class="title">Error de descarga</div>
+        <div class="title">Download Error</div>
         <div class="error-text" id="error-text">
-          No se pudo descargar la actualización.
+          Could not download the update.
         </div>
-        <button class="btn-primary" id="btn-close-error">Aceptar</button>
+        <button class="btn-primary" id="btn-close-error">OK</button>
       </div>
     </div>
 
@@ -243,23 +243,23 @@
         window.electronAPI.onUpdateState((state, payload) => {
           if (state === "available") {
             document.getElementById("available-title").textContent =
-              (payload && payload.title) || "Actualización disponible";
+              (payload && payload.title) || "Update Available";
             document.getElementById("available-desc").textContent =
               (payload && payload.message) ||
-              "Hay una nueva versión de Scoreko disponible.";
+              "A new version of Scoreko is available.";
             setView("available");
           } else if (state === "downloading") {
             setView("downloading");
           } else if (state === "ready") {
             document.getElementById("ready-title").textContent =
-              (payload && payload.title) || "Actualización lista";
+              (payload && payload.title) || "Update Ready";
             document.getElementById("ready-desc").textContent =
               (payload && payload.message) ||
-              "Scoreko se cerrará para instalar la actualización.";
+              "Scoreko will restart to install the update.";
             setView("ready");
           } else if (state === "error") {
             document.getElementById("error-text").textContent =
-              (payload && payload.message) || "Ocurrió un error al descargar.";
+              (payload && payload.message) || "Could not download the update.";
             setView("error");
           }
         });

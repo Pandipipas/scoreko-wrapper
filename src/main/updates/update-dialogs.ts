@@ -46,8 +46,8 @@ export async function askToDownloadUpdate(
     currentUpdateState = {
       state: "available",
       payload: {
-        title: "Actualización disponible",
-        message: `Scoreko ${update.version} está disponible.`,
+        title: "Update Available",
+        message: `Scoreko ${update.version} is available.`,
       },
     };
 
@@ -120,8 +120,8 @@ export async function askToInstallUpdate(
     currentUpdateState = {
       state: "ready",
       payload: {
-        title: "Actualización descargada",
-        message: `Scoreko ${update.version} se ha descargado.`,
+        title: "Update Ready",
+        message: `Scoreko ${update.version} has been downloaded.`,
       },
     };
 
@@ -189,7 +189,7 @@ export async function showDownloadFailedDialog(
     currentUpdateState = {
       state: "error",
       payload: {
-        message: `Detalles: ${errorMessage}`,
+        message: `Details: ${errorMessage}`,
       },
     };
 

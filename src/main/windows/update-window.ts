@@ -16,7 +16,7 @@ export function getOrCreateUpdateWindow(rootPath: string): BrowserWindow {
     height: 340,
     show: false,
     autoHideMenuBar: true,
-    title: "Scoreko - Actualización",
+    title: "Scoreko - Update",
     icon: path.join(rootPath, "static/icons/icon.png"),
     backgroundColor: DEFAULT_WINDOW_BACKGROUND,
     resizable: false,
